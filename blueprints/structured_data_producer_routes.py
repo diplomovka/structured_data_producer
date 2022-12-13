@@ -1,3 +1,4 @@
+import time
 import settings
 from flask import Blueprint
 from flask import request, jsonify
@@ -7,6 +8,8 @@ from pathlib import Path
 from producers.structured_data_producer import set_up_producer, delivery_report
 from serialization_classes.structured_data import StructuredData
 from parsers.sql_dump_parser import parse_queries
+
+time.sleep(30)
 
 producer = set_up_producer()
 
