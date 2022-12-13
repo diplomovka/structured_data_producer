@@ -5,7 +5,7 @@ app = Flask(__name__)
 app.register_blueprint(structured_data_producer_routes, url_prefix='/structured-data')
 
 @app.route('/')
-def hello_world():
+def main_route():
     return '<p>routes /structured-data </p>' 
 
 if __name__ == '__main__':

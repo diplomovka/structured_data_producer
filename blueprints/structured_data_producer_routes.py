@@ -3,6 +3,7 @@ from flask import Blueprint
 from flask import request, jsonify
 from uuid import uuid4
 from hashlib import sha256
+from pathlib import Path
 from producers.structured_data_producer import set_up_producer, delivery_report
 from serialization_classes.structured_data import StructuredData
 from parsers.sql_dump_parser import parse_queries
@@ -11,19 +12,18 @@ producer = set_up_producer()
 
 structured_data_producer_routes = Blueprint('structured_data_producer_routes', __name__)
 
-structured_data_producer_routes.route('/upload', methods=['POST'])
+@structured_data_producer_routes.route('/upload', methods=['POST'])
 def upload_sql_dump():
     # handling sql dump source: https://roytuts.com/python-flask-rest-api-file-upload/
-    if 'file' not in request.files:
+    if 'sql_dump' not in request.files:
         res = jsonify({
             'message': 'There is no sql dump in request.'
         })
         res.status_code = 400
         return res
 
-    # TODO: check extension
-    sql_dump = request.files['file']
-    if sql_dump.filename == '':
+    sql_dump = request.files['sql_dump']
+    if sql_dump.filename == '' or not Path(sql_dump.filename).suffix == '.sql':
         res = jsonify({
             'message': 'No sql dump file was uploaded.'
         })
@@ -32,7 +32,7 @@ def upload_sql_dump():
 
     file_content_bytes = sql_dump.read()
 
-    tables_data, ordered_table_names = parse_queries(file_content_bytes) # TODO: convert to string
+    tables_data, ordered_table_names = parse_queries(file_content_bytes.decode('utf-8'))
 
     produce_structured_data(ordered_table_names, tables_data)
 

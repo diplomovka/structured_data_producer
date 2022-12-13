@@ -1,3 +1,4 @@
 /venv
 __pycache__/
 structured_data_producer.py
+data.sql
